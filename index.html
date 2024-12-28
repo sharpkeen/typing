@@ -252,6 +252,13 @@
             });
         }
 
+        // Normalize Quotes and Apostrophes
+        function normalizeQuotes(char) {
+            return char
+                .replace(/‘|’/g, "'")  // Replace curly single quotes with straight
+                .replace(/“|”/g, '"'); // Replace curly double quotes with straight
+        }
+
         // Handle Typing Input
         function handleTyping(e) {
             if (!startTime) startTime = Date.now(); // Start timer on first key press
@@ -268,14 +275,18 @@
             // Ignore non-character keys
             if (e.key.length > 1) return;
 
+            // Normalize input and expected text
+            const typedChar = normalizeQuotes(e.key);
+            const expectedChar = normalizeQuotes(letters[index].textContent);
+
             // Compare Key Press
-            const current = letters[index];
-            if (e.key === current.textContent) {
-                current.classList.add('correct'); // Mark correct
+            if (typedChar === expectedChar) {
+                letters[index].classList.add('correct'); // Mark correct
                 correctChars++;
             } else {
-                current.classList.add(current.textContent === ' ' ? 'space-wrong' : 'incorrect'); // Highlight wrong spaces
+                letters[index].classList.add(expectedChar === ' ' ? 'space-wrong' : 'incorrect'); // Highlight wrong spaces
             }
+
             index++;
             typedChars++;
 
@@ -296,8 +307,8 @@
         function updateBar(id, value, max) {
             const bar = document.getElementById(`${id}-bar`);
             const valueText = document.getElementById(`${id}-value`);
-            const percent = (value / max) * 377;
-            bar.style.strokeDashoffset = 377 - percent;
+            const percent = (value / max) * 440; // Match the circle size
+            bar.style.strokeDashoffset = 440 - percent;
             valueText.textContent = value;
         }
 
@@ -317,6 +328,7 @@
         fetchVerse();
         restartBtn.addEventListener('click', restartTest);
         document.addEventListener('keydown', handleTyping);
+
 
     </script>
 </body>
